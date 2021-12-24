@@ -7,18 +7,18 @@ struct flb_time {
     struct timespec tm;
 };
 
-static inline void flb_time_zero(struct flb_time *tm)
+static inline void flb_time_zero(volatile struct flb_time *tm)
 {
     tm->tm.tv_sec = 0;
     tm->tm.tv_nsec = 0;
 }
 
-static double flb_time_to_double(struct flb_time *tm)
+static double flb_time_to_double(volatile struct flb_time *tm)
 {
     return (double)(tm->tm.tv_sec) + ((double)tm->tm.tv_nsec/(double)ONESEC_IN_NSEC);
 }
 
-static uint64_t flb_time_to_nanosec(struct flb_time *tm)
+static uint64_t flb_time_to_nanosec(volatile struct flb_time *tm)
 {
     return (((uint64_t)tm->tm.tv_sec * 1000000000L) + tm->tm.tv_nsec);
 }
@@ -26,7 +26,7 @@ static uint64_t flb_time_to_nanosec(struct flb_time *tm)
 // Benchmarks
 
 static void BM_None(benchmark::State& state) {
-    struct flb_time out_time = {0};
+    volatile struct flb_time out_time = {0};
     flb_time_zero(&out_time);
     volatile bool flag;
     for (auto _ : state) {
@@ -36,7 +36,7 @@ static void BM_None(benchmark::State& state) {
 BENCHMARK(BM_None);
 
 static void BM_Nano(benchmark::State& state) {
-    struct flb_time out_time = {0};
+    volatile struct flb_time out_time = {0};
     flb_time_zero(&out_time);
     volatile bool flag;
     for (auto _ : state) {
@@ -46,7 +46,7 @@ static void BM_Nano(benchmark::State& state) {
 BENCHMARK(BM_Nano);
 
 static void BM_Sec(benchmark::State& state) {
-    struct flb_time out_time = {0};
+    volatile struct flb_time out_time = {0};
     flb_time_zero(&out_time);
     volatile bool flag;
     for (auto _ : state) {
